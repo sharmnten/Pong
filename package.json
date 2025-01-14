@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "playroomkit": "^0.0.85",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  }
-}
