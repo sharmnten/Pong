@@ -1,24 +1,23 @@
 import kaplay from "kaplay";
 import nipplejs from "nipplejs";
 // 0. Import Playroom SDK
-import { onPlayerJoin, insertCoin, isHost, myPlayer } from "playroomkit";
+import { onPlayerJoin, insertCoin, isHost, myPlayer, setState } from "playroomkit";
  
 const SPEED = 320;
 const PLAYERSIZE = 20;
  
 function start() {
-  kaplay({background: [0, 0, 0]});
+  kaplay({width:1920/2, height:1080/2,background: [0, 0, 0]});
   setGravity(1600);
  
   // 1. Pass Joystick data to Playroom SDK
-  const joystick = nipplejs.create();
-  joystick.on("plain", (e, data) => {
-    myPlayer().setState("dir", data.direction);
-  });
-  joystick.on("end", () => {
-    myPlayer().setState("dir", undefined);
-  });
- 
+onKeyDown("left", () => myPlayer().setState("dir", { x: "left" }));
+onKeyDown("right", () => myPlayer().setState("dir", { x: "right" }));
+onKeyDown("up", () => myPlayer().setState("dir", { y: "up" }));
+onKeyRelease("left", () => myPlayer().setState("dir", { x:null }));
+onKeyRelease("right", () => myPlayer().setState("dir", { x: null }));
+onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
+
   // Platform to hold the player(s)
   add([
     rect(width(), 48),
@@ -30,28 +29,35 @@ function start() {
  
   // 2. When a new player joins, add a circle for them in the color they chose
   onPlayerJoin((player) => {
+    myPlayer().setState("alive", true);
     const playerColor = player.getProfile().color;
+    const playerName = player.getProfile().name;
     const playerSprite = add([
       circle(PLAYERSIZE),
+      health(50),
       color(playerColor.r, playerColor.g, playerColor.b),
       pos(rand(0, width()), center().y),
-      area({ width: PLAYERSIZE, height: PLAYERSIZE }),
+      area({width: PLAYERSIZE, height: PLAYERSIZE }),
       body(),
+      "player",
     ]);
  
     playerSprite.onUpdate(() => {
       // 3. We use host player as the source of truth for player positions
       if (isHost()) {
         const controls = player.getState("dir") || {};
-        if (controls.x == "left"||isKeyDown("left")) {
+        if (controls.x == "left") {
           playerSprite.move(-SPEED, 0);
         }
-        if (controls.x == "right"||isKeyDown("right")) {
+        if (controls.x == "right") {
           playerSprite.move(SPEED, 0);
         }
-        if (controls.y == "up" && playerSprite.isGrounded()||isKeyDown("up")&& playerSprite.isGrounded()) {
+        if (controls.y == "up" && playerSprite.isGrounded()) {
           playerSprite.jump();
         }
+
+
+        
  
         // Sync position to other players
         player.setState("pos", {
@@ -63,8 +69,21 @@ function start() {
       else {
         const newPos = player.getState("pos") || { x: 0, y: 0 };
         playerSprite.moveTo(newPos.x, newPos.y);
+        const newHealth = player.getState("health") || 0;
+        playerSprite.setHP(newHealth);
+        if(playerSprite.hp == 0){
+          destroy(playerSprite);
+        }
       }
     });
+   /* playerSprite.onCollide("player", "player", (e,col) => {
+      if(!col?.isBottom()){
+        playerSprite.hurt(10);
+      }
+      else{
+        e.hurt(10);
+      }
+    });*/
  
     player.onQuit(() => destroy(playerSprite));
   });
