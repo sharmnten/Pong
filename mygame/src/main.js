@@ -75,7 +75,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
     });
    playerSprite.onCollide("player", "player", (e,col) => {
       if(!col?.isBottom()){
-        playerSprite.destroy();
+        destroy(playerSprite);
         player.setState("alive", false);
       }
       else{
