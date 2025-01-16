@@ -28,7 +28,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
  
   // 2. When a new player joins, add a circle for them in the color they chose
   onPlayerJoin((player) => {
-    myPlayer().setState("alive", true);
+    myPlayer().setState("isAlive", true);
     const playerColor = player.getProfile().color;
     const playerName = player.getProfile().name;
     const playerSprite = add([
