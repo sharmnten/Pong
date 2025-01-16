@@ -30,7 +30,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
   onPlayerJoin((player) => {
     myPlayer().setState("alive", true);
     const playerColor = player.getProfile().color;
-    const playerName = player.getProfile().name;
+    //const playerName = player.getProfile().name;
     const playerSprite = add([
       circle(PLAYERSIZE),
       color(playerColor.r, playerColor.g, playerColor.b),
@@ -67,8 +67,8 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
       else {
         const newPos = player.getState("pos") || { x: 0, y: 0 };
         playerSprite.moveTo(newPos.x, newPos.y);
-        const isAlive = player.getState("alive") || true;
-        if(!isAlive){
+        const alive = player.getState("alive") || true;
+        if(!alive){
           destroy(playerSprite);
         }
       }
