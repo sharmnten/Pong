@@ -8,8 +8,10 @@
 		"zip": "npm run build && mkdir -p dist && zip -r dist/game.zip dist -x \"**/.DS_Store\""
 	},
 	"dependencies": {
+		"create-kaplay": "^3.1.0",
 		"kaplay": "^3001.0.6",
 		"nipplejs": "^0.10.2",
+		"playground": "^0.7.0",
 		"playroomkit": "^0.0.85",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1"

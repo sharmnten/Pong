@@ -1,5 +1,4 @@
 import kaplay from "kaplay";
-import nipplejs from "nipplejs";
 // 0. Import Playroom SDK
 import { onPlayerJoin, insertCoin, isHost, myPlayer, setState } from "playroomkit";
  
@@ -34,7 +33,6 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
     const playerName = player.getProfile().name;
     const playerSprite = add([
       circle(PLAYERSIZE),
-      health(50),
       color(playerColor.r, playerColor.g, playerColor.b),
       pos(rand(0, width()), center().y),
       area({width: PLAYERSIZE, height: PLAYERSIZE }),
@@ -69,21 +67,22 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
       else {
         const newPos = player.getState("pos") || { x: 0, y: 0 };
         playerSprite.moveTo(newPos.x, newPos.y);
-        const newHealth = player.getState("health") || 0;
-        playerSprite.setHP(newHealth);
-        if(playerSprite.hp == 0){
+        const isAlive = player.getState("alive") || true;
+        if(!isAlive){
           destroy(playerSprite);
         }
       }
     });
-   /* playerSprite.onCollide("player", "player", (e,col) => {
+   playerSprite.onCollide("player", "player", (e,col) => {
       if(!col?.isBottom()){
-        playerSprite.hurt(10);
+        playerSprite.destroy();
+        player.setState("alive", false);
       }
       else{
-        e.hurt(10);
+        e.setState("alive", false);
+        e.destroy()
       }
-    });*/
+    });
  
     player.onQuit(() => destroy(playerSprite));
   });
