@@ -12,6 +12,7 @@
 		"kaplay": "^3001.0.6",
 		"nipplejs": "^0.10.2",
 		"playground": "^0.7.0",
+		"playroom": "^0.39.1",
 		"playroomkit": "^0.0.85",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1"
