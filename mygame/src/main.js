@@ -31,16 +31,28 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
     myPlayer().setState("alive", true);
     const playerColor = player.getProfile().color;
     //const playerName = player.getProfile().name;
-    const playerSprite = add([
-      circle(PLAYERSIZE),
-      color(playerColor.r, playerColor.g, playerColor.b),
-      pos(rand(0, width()), center().y),
-      area({width: PLAYERSIZE, height: PLAYERSIZE }),
-      body(),
-      "player",
-    ]);
+    var playerSprite = null;
+    if(isHost()){
+      playerSprite = add([
+        circle(PLAYERSIZE),
+        color(playerColor.r, playerColor.g, playerColor.b),
+        pos(rand(0, width()), center().y),
+        area({width: PLAYERSIZE, height: PLAYERSIZE }),
+        body(),
+        "hostplayer",
+      ]);
+    } else {
+      playerSprite = add([
+        circle(PLAYERSIZE),
+        color(playerColor.r, playerColor.g, playerColor.b),
+        pos(rand(0, width()), center().y),
+        area({width: PLAYERSIZE, height: PLAYERSIZE }),
+        body(),
+        "player",
+      ]);
+    }
  
-    playerSprite.onUpdate(() => {
+    onUpdate(() => {
       // 3. We use host player as the source of truth for player positions
       if (isHost()) {
         const controls = player.getState("dir") || {};
@@ -73,7 +85,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
         }
       }
     });
-   playerSprite.onCollide("player", "player", (e,col) => {
+   onCollide("hostplayer", "player", (e,col) => {
       if(!col?.isBottom()){
         destroy(playerSprite);
         player.setState("alive", false);
