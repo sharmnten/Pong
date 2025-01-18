@@ -1,6 +1,6 @@
 import kaplay from "kaplay";
 // 0. Import Playroom SDK
-import { onPlayerJoin, insertCoin, isHost, myPlayer, setState } from "playroomkit";
+import { onPlayerJoin, insertCoin, isHost, myPlayer, setState, RPC } from "playroomkit";
  
 const SPEED = 320;
 const PLAYERSIZE = 20;
@@ -31,6 +31,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
     myPlayer().setState("alive", true);
     const playerColor = player.getProfile().color;
     //const playerName = player.getProfile().name;
+    const playerPlayroom = player;
     var playerSprite = null;
     if(isHost()){
       playerSprite = add([
@@ -39,7 +40,8 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
         pos(rand(0, width()), center().y),
         area({width: PLAYERSIZE, height: PLAYERSIZE }),
         body(),
-        "hostplayer",
+        { player: playerPlayroom},
+        "hostplayer", "player",
       ]);
     } else {
       playerSprite = add([
@@ -48,6 +50,7 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
         pos(rand(0, width()), center().y),
         area({width: PLAYERSIZE, height: PLAYERSIZE }),
         body(),
+        { player: playerPlayroom},
         "player",
       ]);
     }
@@ -85,13 +88,17 @@ onKeyRelease("up", () => myPlayer().setState("dir", { y: null }));
         }
       }
     });
-   onCollide("hostplayer", "player", (e,col) => {
-      if(!col?.isBottom()){
-        destroy(playerSprite);
+    RPC.register('squash', (data, caller) => {
+      (data.player).setState("alive", false);
+    });
+   playerSprite.onCollide("player", (e,col) => {
+      if(!col.isBottom()){
         player.setState("alive", false);
+        destroy(playerSprite);
       }
       else{
-        e.setState("alive", false);
+        console.log(e);
+        RPC.call('squash', {player: e.player}, RPC.Mode.ALL);
         e.destroy()
       }
     });
